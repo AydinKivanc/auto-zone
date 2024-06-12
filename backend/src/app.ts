@@ -9,8 +9,8 @@ import {
   updateCar,
 } from "./controllers/cars.controller"
 import { authMiddleware } from "./middlewares/auth.middleware"
-import { testMiddleware } from "./middlewares/test.middleware"
-import { testCarMiddleware } from "./middlewares/testCar.middleware"
+//import { testMiddleware } from "./middlewares/test.middleware"
+//import { testCarMiddleware } from "./middlewares/testCar.middleware"
 import { verifyCarIdMatch } from "./middlewares/verifyCarIdMatch.middleware"
 import { verifyCarExists } from "./middlewares/verifyCarExists.middleware"
 
@@ -22,12 +22,12 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true })) //gelen POST isteklerin gövdesindeki Form verilerini otomatik olarak ayrıştırılmasını sağlar.
 
 // authMiddleware'i sadece /api/v1/cars yollarında kullan
-app.use("/api/v1/cars", authMiddleware, testMiddleware)
+app.use("/api/v1/cars", authMiddleware)
 app.route("/api/v1/cars").get(getAllCars).post(createCar)
 
 app
   .route("/api/v1/cars/:id")
-  .get(verifyCarExists, testCarMiddleware, getACar)
+  .get(verifyCarExists, getACar)
   .post(verifyCarIdMatch, updateCar)
   //  .patch(updateCar)
   .delete(verifyCarExists, verifyCarIdMatch, deleteCar)
