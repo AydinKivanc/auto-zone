@@ -1,101 +1,41 @@
-import { Request, Response } from "express"
-import { PrismaClient } from "@prisma/client"
 import { Car } from "../interfaces/car.interface"
-import { ErrorResponse } from "../interfaces/error.interface"
+import * as carService from "../services/car.service"
+import catchAsync from "../utils/catchAsync"
 
-const prisma = new PrismaClient()
+export const getAllCars = catchAsync(async (req, res) => {
+  const cars = await carService.getAllCars()
+  res.status(200).json(cars)
+})
 
-// Get all cars
-export const getAllCars = async (
-  req: Request,
-  res: Response<Car[] | ErrorResponse>
-) => {
-  try {
-    const cars = await prisma.cars.findMany()
-    res.json(cars)
-    console.log("getAllCars is working successfully")
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Internal Server Error" })
-  }
-}
+export const createCar = catchAsync(async (req, res) => {
+  const newCar: Car = req.body
+  const createdCar = await carService.createCar(newCar)
+  res.status(201).json(createdCar)
+})
 
-// Create a new car
-export const createCar = async (
-  req: Request,
-  res: Response<Car | ErrorResponse>
-) => {
-  try {
-    const newCar: Car = req.body
-    const createdCar = await prisma.cars.create({ data: newCar })
-    res.status(201).json(createdCar)
-    console.log("createCar is working successfully")
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Internal Server Error" })
-  }
-}
-
-// Get a car by ID
-export const getACar = async (
-  req: Request,
-  res: Response<Car | ErrorResponse>
-) => {
-  const carId = parseInt(req.params.id) // Assuming the car ID is sent as a request parameter
-  try {
-    const car = await prisma.cars.findUnique({
-      where: { id: carId },
-    })
-    if (!car) {
-      return res.status(404).json({ error: "Car not found" })
-    }
-    res.json(car)
-    console.log("getACar is working successfully")
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Internal Server Error" })
-  }
-}
-
-// Update a car by ID
-export const updateCar = async (
-  req: Request,
-  res: Response<Car | ErrorResponse>
-) => {
+export const getACar = catchAsync(async (req, res) => {
   const carId = parseInt(req.params.id)
-  try {
-    const updatedCar: Car = req.body
-    const car = await prisma.cars.update({
-      where: { id: carId },
-      data: updatedCar,
-    })
-    res.json(car)
-    console.log("updateCar is working successfully")
-  } catch (error: any) {
-    console.error(error)
-    if (error.code === "P2025") {
-      res.status(404).json({ error: "Car not found" })
-    } else {
-      res.status(500).json({ error: "Internal Server Error" })
-    }
+  const car = await carService.getACar(carId)
+  if (!car) {
+    return res.status(404).json({ error: "Car not found" })
   }
-}
+  res.status(200).json(car)
+})
 
-// Delete a car by ID
-export const deleteCar = async (req: Request, res: Response<ErrorResponse>) => {
+export const updateCar = catchAsync(async (req, res) => {
+  // !<input type="hidden" name="id" value={id} /> Bu sekilde body icinden getirilebilir veya ContextApi kullanilir
+  const bodyCarId = req.body.id
   const carId = parseInt(req.params.id)
-  try {
-    await prisma.cars.delete({
-      where: { id: carId },
-    })
-    res.status(204).send() // No Content
-    console.log("Car deleted")
-  } catch (error: any) {
-    console.error(error)
-    if (error.code === "P2025") {
-      res.status(404).json({ error: "Car not found" })
-    } else {
-      res.status(500).json({ error: "Internal Server Error" })
-    }
+  if (carId !== bodyCarId) {
+    return res.status(400).send("Blog ID'si eşleşmiyor")
   }
-}
+  const updatedCar: Car = req.body
+  const car = await carService.updateCar(carId, updatedCar)
+  res.json(car)
+})
+
+export const deleteCar = catchAsync(async (req, res) => {
+  const carId = parseInt(req.params.id)
+  await carService.deleteCar(carId)
+  res.status(204).send()
+})
