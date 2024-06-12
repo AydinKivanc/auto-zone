@@ -11,6 +11,8 @@ import {
 import { authMiddleware } from "./middlewares/auth.middleware"
 import { testMiddleware } from "./middlewares/test.middleware"
 import { testCarMiddleware } from "./middlewares/testCar.middleware"
+import { verifyCarIdMatch } from "./middlewares/verifyCarIdMatch.middleware"
+import { verifyCarExists } from "./middlewares/verifyCarExists.middleware"
 
 const app = express()
 
@@ -23,13 +25,12 @@ app.use(express.urlencoded({ extended: true })) //gelen POST isteklerin gövdesi
 app.use("/api/v1/cars", authMiddleware, testMiddleware)
 app.route("/api/v1/cars").get(getAllCars).post(createCar)
 
-//app.use("/api/v1/cars/:id", verifyCarId)
 app
   .route("/api/v1/cars/:id")
-  .get(testCarMiddleware, getACar)
-  .post(updateCar)
+  .get(verifyCarExists, testCarMiddleware, getACar)
+  .post(verifyCarIdMatch, updateCar)
   //  .patch(updateCar)
-  .delete(deleteCar)
+  .delete(verifyCarExists, verifyCarIdMatch, deleteCar)
 
 export default app
 

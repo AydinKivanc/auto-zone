@@ -4,16 +4,18 @@
     "outDir": "dist",
     "strict": true,
     "lib": ["esnext"],
+    "resolveJsonModule": true, // ekledim
     "esModuleInterop": true,
     "moduleResolution": "node",
     "target": "es6",
-    "rootDir": "."
+    "rootDir": ".",
+    //"types": ["node"], // ekledim
+    "forceConsistentCasingInFileNames": true, // ekledim
+    "skipLibCheck": true, // ekledim
+    "strictNullChecks": true, // ekledim
+    "typeRoots": ["./src/types", "./node_modules/@types"], // ekledim
+    "types": ["node", "express"] // ekledim
   },
-  "include": [
-    "src/**/*.ts",
-    "src/types/*.d.ts",
-    "src/types/expressdts",
-    "types/express.d.ts"
-  ],
+  "include": ["src/**/*.ts", "src/types/*.d.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
