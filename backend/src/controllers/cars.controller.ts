@@ -1,4 +1,4 @@
-import { Car } from "../interfaces/car.interface"
+import { Car } from "../models/car.models"
 import * as carService from "../services/car.service"
 import catchAsync from "../utils/catchAsync"
 
@@ -15,6 +15,7 @@ export const createCar = catchAsync(async (req, res) => {
 
 export const getACar = catchAsync(async (req, res) => {
   const car = res.locals.car
+  //res.status(200).json({message:"get a car succes"})
   res.status(200).json(car)
 })
 

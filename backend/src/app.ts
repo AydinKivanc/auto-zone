@@ -21,16 +21,16 @@ app.use(morgan("dev")) // Morgan'ı kullanarak HTTP isteklerini loglama
 app.use(express.json())
 app.use(express.urlencoded({ extended: true })) //gelen POST isteklerin gövdesindeki Form verilerini otomatik olarak ayrıştırılmasını sağlar.
 
-// authMiddleware'i sadece /api/v1/cars yollarında kullan
-app.use("/api/v1/cars", authMiddleware)
-app.route("/api/v1/cars").get(getAllCars).post(createCar)
-
 app
   .route("/api/v1/cars/:id")
   .get(verifyCarExists, getACar)
   .post(verifyCarIdMatch, updateCar)
   //  .patch(updateCar)
   .delete(verifyCarExists, verifyCarIdMatch, deleteCar)
+
+// authMiddleware'i sadece /api/v1/cars yollarında kullan
+app.use("/api/v1/cars", authMiddleware)
+app.route("/api/v1/cars").get(getAllCars).post(createCar)
 
 export default app
 

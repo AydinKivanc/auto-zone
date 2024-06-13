@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { Car } from "../interfaces/car.interface"
+import { Car } from "../models/car.models"
 
 const prisma = new PrismaClient()
 
